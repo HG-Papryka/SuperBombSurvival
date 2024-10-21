@@ -27,8 +27,8 @@ local points = {
 
 local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear)
 
-local MAXDISTANCE = 5  -- Maximum allowed distance from the target point
-local TWEEN_TIMEOUT = 5  -- Timeout for the tween to finish
+local MAXDISTANCE = 10  -- Increased the max distance to 10
+local TWEEN_TIMEOUT = 10  -- Increased timeout to 10 seconds
 local FIXED_HEIGHT = 272  -- Height at which the character will move
 
 -- Function to perform a tween to a specific position
@@ -57,7 +57,7 @@ local function tweenToPosition(cframe)
 
     -- Check if the character reached the point
     currentPos = humanoidRootPart.Position
-    if (currentPos - adjustedCFrame.Position).magnitude > MAX_DISTANCE then
+    if (currentPos - adjustedCFrame.Position).magnitude > MAXDISTANCE then
         if timeout then
             -- Force position if stuck
             humanoidRootPart.CFrame = adjustedCFrame
