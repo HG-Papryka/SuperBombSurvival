@@ -25,10 +25,10 @@ local points = {
     CFrame.new(25, 272, 181)    -- New intermediate point between 183 and 181
 }
 
-local tweenInfo = TweenInfo.new(0.69, Enum.EasingStyle.Linear)
+local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear)
 
-local MAXDISTANCE = 10  -- Increased the max distance to 10
-local TWEEN_TIMEOUT = 10  -- Increased timeout to 10 seconds
+local MAXDISTANCE = 5  -- Maximum allowed distance from the target point
+local TWEEN_TIMEOUT = 5  -- Timeout for the tween to finish
 local FIXED_HEIGHT = 272  -- Height at which the character will move
 
 -- Function to perform a tween to a specific position
@@ -46,23 +46,8 @@ local function tweenToPosition(cframe)
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = adjustedCFrame})
     tween:Play()
 
-    -- Timeout safety
-    local timeout = false
-    spawn(function()
-        wait(TWEEN_TIMEOUT)
-        timeout = true
-    end)
-
-    tween.Completed:Wait()  -- Wait for the tween to complete or timeout
-
-    -- Check if the character reached the point
-    currentPos = humanoidRootPart.Position
-    if (currentPos - adjustedCFrame.Position).magnitude > MAXDISTANCE then
-        if timeout then
-            -- Force position if stuck
-            humanoidRootPart.CFrame = adjustedCFrame
-        end
-    end
+    -- Wait for the tween to complete before continuing
+    tween.Completed:Wait()
 
     humanoidRootPart.CanCollide = true
 end
@@ -79,40 +64,7 @@ local function walkToPoints()
     end
 end
 
--- Reset on death
-local function onCharacterDied()
-    character = player.Character or player.CharacterAdded:Wait()
-    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    walkToPoints()
-end
-
--- Observe the player's death and reset
-player.CharacterAdded:Connect(function(newCharacter)
-    character = newCharacter
-    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    character:WaitForChild("Humanoid").Died:Connect(onCharacterDied)
-end)
-
--- Function to reset the autofarm script every 10 minutes
-local function resetAutofarmEveryXSeconds(seconds)
-    while true do
-        wait(seconds)  -- Wait for the specified amount of time (in seconds)
-        if AutoFarm.Potet then
-            -- Reset the script
-            walkToPoints()
-        end
-    end
-end
-
 -- Start movement if AutoFarm is enabled
 if AutoFarm.Potet then
     walkToPoints()
 end
-
--- Start the reset timer to reset the script every 10 minutes (600 seconds)
-spawn(function()
-    resetAutofarmEveryXSeconds(600)
-end)
-
--- Loading external script from the given link
-loadstring(game:HttpGet("https://raw.githubusercontent.com/HG-Papryka/SuperBombSurvival/refs/heads/main/Script.lua"))()
