@@ -25,7 +25,7 @@ local points = {
     CFrame.new(25, 272, 181)    -- New intermediate point between 183 and 181
 }
 
-local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear)
+local tweenInfo = TweenInfo.new(0.69, Enum.EasingStyle.Linear)
 
 local MAXDISTANCE = 10  -- Increased the max distance to 10
 local TWEEN_TIMEOUT = 10  -- Increased timeout to 10 seconds
