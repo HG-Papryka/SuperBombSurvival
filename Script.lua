@@ -21,12 +21,13 @@ local points = {
     CFrame.new(-34, 272, 29),   -- Point 3
     CFrame.new(-34, 272, 80),   -- Intermediate point 5
     CFrame.new(-34, 272, 135),  -- Intermediate point 6
-    CFrame.new(-34, 272, 183)   -- Point 4
+    CFrame.new(-34, 272, 183),  -- Point 4
+    CFrame.new(25, 272, 181)    -- New intermediate point between 183 and 181
 }
 
-local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear)
+local tweenInfo = TweenInfo.new(0.69, Enum.EasingStyle.Linear)
 
-local MAX_DISTANCE = 5  -- Maximum allowed distance from the target point
+local MAXDISTANCE = 5  -- Maximum allowed distance from the target point
 local TWEEN_TIMEOUT = 5  -- Timeout for the tween to finish
 local FIXED_HEIGHT = 272  -- Height at which the character will move
 
@@ -56,7 +57,7 @@ local function tweenToPosition(cframe)
 
     -- Check if the character reached the point
     currentPos = humanoidRootPart.Position
-    if (currentPos - adjustedCFrame.Position).magnitude > MAX_DISTANCE then
+    if (currentPos - adjustedCFrame.Position).magnitude > MAXDISTANCE then
         if timeout then
             -- Force position if stuck
             humanoidRootPart.CFrame = adjustedCFrame
@@ -92,7 +93,23 @@ player.CharacterAdded:Connect(function(newCharacter)
     character:WaitForChild("Humanoid").Died:Connect(onCharacterDied)
 end)
 
+-- Function to reset the autofarm script every 10 minutes
+local function resetAutofarmEveryXSeconds(seconds)
+    while true do
+        wait(seconds)  -- Wait for the specified amount of time (in seconds)
+        if AutoFarm.Potet then
+            -- Reset the script
+            walkToPoints()
+        end
+    end
+end
+
 -- Start movement if AutoFarm is enabled
 if AutoFarm.Potet then
     walkToPoints()
 end
+
+-- Start the reset timer to reset the script every 10 minutes (600 seconds)
+spawn(function()
+    resetAutofarmEveryXSeconds(600)
+end)
