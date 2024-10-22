@@ -75,14 +75,11 @@ local function loopTween()
 
                 if getgenv().autofarm then
                     teleportToParts()
-                    task.wait(0.5)
+                    task.wait(0.3)
                 end
             end
         end
-        task.wait(1)
-    end
-end
-
+   
 if getgenv().autofarm == true then
     loopTween()
 end
