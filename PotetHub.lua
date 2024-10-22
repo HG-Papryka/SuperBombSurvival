@@ -40,19 +40,24 @@ local function createTween(part, goalPosition)
     return TweenService:Create(part, tweenInfo, goal)
 end
 
+local function isEventIconGrounded(part)
+    return part.Position.Y <= (workspace.Baseplate.Position.Y + 5) -- Adjust as needed
+end
+
 local function teleportToParts()
     for _, part in ipairs(workspace.Bombs:GetChildren()) do
         if part and part.Parent and table.find(targetNames, part.Name) then
             -- Collect coins only if in the defined area
             if (part.Name == "HalloweenCandy" and getgenv().collectHalloweenCandy) or
-               (part.Name == "EventIcon" and getgenv().collect_EventIcon) or
+               (part.Name == "EventIcon" and getgenv().collect_EventIcon and isEventIconGrounded(part)) or
                (part.Name == "HeartPickup" and getgenv().collect_HeartPickup) or
-               (getgenv().collect_Coins and (part.Name == "Coin_copper" or 
-                                              part.Name == "Coin_silver" or 
-                                              part.Name == "Coin_gold" or 
-                                              part.Name == "Coin_red" or 
-                                              part.Name == "Coin_purple") and 
-                isInCollectionArea(part.Position) ) then
+               (getgenv().collect_Coins and 
+               (part.Name == "Coin_copper" or 
+                part.Name == "Coin_silver" or 
+                part.Name == "Coin_gold" or 
+                part.Name == "Coin_red" or 
+                part.Name == "Coin_purple") and 
+                isInCollectionArea(part.Position)) then
 
                 if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
                     print("Teleporting to: " .. part.Name)
@@ -110,4 +115,3 @@ end
 if getgenv().autofarm then
     loopTween()
 end
-
