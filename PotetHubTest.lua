@@ -8,10 +8,7 @@ local Remotes = game:GetService("ReplicatedStorage").Remotes
 getgenv().autofarm = getgenv().autofarm or true
 getgenv().collect_HalloweenCandy = getgenv().collect_HalloweenCandy or true
 getgenv().collect_EventIcon = getgenv().collect_EventIcon or true
-getgenv().collect_Coin = getgenv().collect_Coin or true
 getgenv().collect_HeartPickup = getgenv().collect_HeartPickup or true
-
--- Collecting coins settings
 getgenv().collect_Coins = true  -- Set to true to collect all coin colors
 
 local targetNames = {
