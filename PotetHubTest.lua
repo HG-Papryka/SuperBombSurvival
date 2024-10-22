@@ -4,12 +4,19 @@ local isPaused = false
 local tween
 local Remotes = game:GetService("ReplicatedStorage").Remotes
 
--- Ensure global variables exist, but do not overwrite false values
-getgenv().autofarm = getgenv().autofarm or true
-getgenv().collect_HalloweenCandy = getgenv().collect_HalloweenCandy or true
-getgenv().collect_EventIcon = getgenv().collect_EventIcon or true
-getgenv().collect_HeartPickup = getgenv().collect_HeartPickup or true
-getgenv().collect_Coins = true  -- Set to true to collect all coin colors
+local defaultSettings = {
+    autofarm = true,
+    collect_HalloweenCandy = false,
+    collect_EventIcon = true,
+    collect_Coins = true,
+    collect_HeartPickup = true
+}
+
+getgenv().autofarm = getgenv().autofarm or defaultSettings.autofarm
+getgenv().collect_HalloweenCandy = getgenv().collect_HalloweenCandy or defaultSettings.collect_HalloweenCandy
+getgenv().collect_EventIcon = getgenv().collect_EventIcon or defaultSettings.collect_EventIcon
+getgenv().collect_Coins = getgenv().collect_Coins or defaultSettings.collect_Coins
+getgenv().collect_HeartPickup = getgenv().collect_HeartPickup or defaultSettings.collect_HeartPickup
 
 local targetNames = {
     "Coin_copper",
@@ -22,46 +29,30 @@ local targetNames = {
     "HeartPickup"
 }
 
--- Define the area for collecting coins
-local function isInCollectionArea(position)
-    local minX = math.min(121, 120, -34, -34)
-    local maxX = math.max(121, 120, -34, -34)
-    local minZ = math.min(181, 28, 29, 183)
-    local maxZ = math.max(181, 28, 29, 183)
-
-    return position.X >= minX and position.X <= maxX and position.Z >= minZ and position.Z <= maxZ
-end
-
 local function createTween(part, goalPosition)
     local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
     local goal = {CFrame = goalPosition}
     return TweenService:Create(part, tweenInfo, goal)
 end
 
--- Check if the Event Icon is grounded
-local function isEventIconGrounded(part)
-    return part.Position.Y <= (workspace.Baseplate.Position.Y + 5) -- Adjust as needed
+local function isInCollectingZone(part)
+    local position = part.Position
+    return position.X >= 101 and position.X <= 141 and position.Z >= 28 and position.Z <= 183
 end
 
 local function teleportToParts()
     for _, part in ipairs(workspace.Bombs:GetChildren()) do
-        if part and part.Parent and table.find(targetNames, part.Name) then
-            -- Collect coins only if in the defined area
+        if table.find(targetNames, part.Name) then
             if (part.Name == "HalloweenCandy" and getgenv().collect_HalloweenCandy) or
-               (part.Name == "EventIcon" and getgenv().collect_EventIcon and isEventIconGrounded(part)) or
+               (part.Name == "EventIcon" and getgenv().collect_EventIcon) or
                (part.Name == "HeartPickup" and getgenv().collect_HeartPickup) or
-               (getgenv().collect_Coins and 
-               (part.Name == "Coin_copper" or 
-                part.Name == "Coin_silver" or 
-                part.Name == "Coin_gold" or 
-                part.Name == "Coin_red" or 
-                part.Name == "Coin_purple") and 
-                isInCollectionArea(part.Position)) then
+               (string.match(part.Name, "Coin_") and getgenv().collect_Coins) then
 
-                if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-                    print("Teleporting to: " .. part.Name)  -- Debugging line
-                    Player.Character.HumanoidRootPart.CFrame = part.CFrame
-                    wait(0.2)  -- Slight delay to ensure teleportation happens before next action
+                if isInCollectingZone(part) then
+                    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+                        Player.Character.HumanoidRootPart.CFrame = part.CFrame
+                        task.wait(0.2)
+                    end
                 end
             end
         end
@@ -78,39 +69,27 @@ local function loopTween()
 
     while true do
         if isPaused then
-            while isPaused do wait() end
+            while isPaused do task.wait() end
         end
 
         Remotes.chooseOption:FireServer("afk", false)
 
-        -- Loop through the defined positions for tweening
         for _, pos in ipairs(positions) do
             if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
                 tween = createTween(Player.Character.HumanoidRootPart, pos)
                 tween:Play()
-                tween.Completed:Wait()  -- Wait for the tween to complete before moving to the next position
+                tween.Completed:Wait()
 
                 if getgenv().autofarm then
-                    teleportToParts()  -- Teleport after tweening to the new position
+                    teleportToParts()
+                    task.wait(0.5)
                 end
             end
         end
+        task.wait(1)
     end
 end
 
--- Anti-AFK functionality
-while true do
-    wait(300)  -- Waits 300 seconds (5 minutes)
-    local player = game.Players.LocalPlayer
-    local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-    
-    if humanoid then
-        humanoid:Move(Vector3.new(0, 0, 1))  -- Moves forward
-        wait(1)  -- Short delay between movements
-        humanoid:Move(Vector3.new(0, 0, -1))  -- Moves backward
-    end
-end
-
-if getgenv().autofarm then
+if getgenv().autofarm == true then
     loopTween()
 end
