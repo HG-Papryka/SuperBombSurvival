@@ -1,3 +1,16 @@
+while true do
+    wait(300)
+    local player = game.Players.LocalPlayer
+    local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid:Move(Vector3.new(0, 0, 1))
+        humanoid:Move(Vector3.new(0, 0, -1))
+
+    end
+end
+
+
+
 local TweenService = game:GetService("TweenService")
 local Player = game.Players.LocalPlayer
 local isPaused = false
@@ -35,6 +48,11 @@ local function createTween(part, goalPosition)
     return TweenService:Create(part, tweenInfo, goal)
 end
 
+local function isInCollectingZone(part)
+    local position = part.Position
+    return position.X >= 101 and position.X <= 141 and position.Z >= 28 and position.Z <= 183
+end
+
 local function teleportToParts()
     for _, part in ipairs(workspace.Bombs:GetChildren()) do
         if table.find(targetNames, part.Name) then
@@ -43,9 +61,11 @@ local function teleportToParts()
                (part.Name == "HeartPickup" and getgenv().collect_HeartPickup) or
                (string.match(part.Name, "Coin_") and getgenv().collect_Coins) then
 
-                if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-                    Player.Character.HumanoidRootPart.CFrame = part.CFrame
-                    task.wait(0.2)
+                if isInCollectingZone(part) then
+                    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+                        Player.Character.HumanoidRootPart.CFrame = part.CFrame
+                        task.wait(0.2)
+                    end
                 end
             end
         end
@@ -75,11 +95,12 @@ local function loopTween()
 
                 if getgenv().autofarm then
                     teleportToParts()
-                    task.wait(0.3)
+                    task.wait(0.5)
                 end
             end
         end
-   
+     
+
 if getgenv().autofarm == true then
     loopTween()
 end
