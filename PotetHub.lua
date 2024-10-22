@@ -4,9 +4,6 @@ getgenv().collectHalloweenCandy = getgenv().collectHalloweenCandy or true
 getgenv().collect_EventIcon = getgenv().collect_EventIcon or true
 getgenv().collect_HeartPickup = getgenv().collect_HeartPickup or true
 
--- Collecting coins settings
-getgenv().collect_Coins = true  -- Set to true to collect all coin colors
-
 -- Main functionality
 local TweenService = game:GetService("TweenService")
 local Player = game.Players.LocalPlayer
