@@ -1,3 +1,16 @@
+while true do
+    wait(300)
+    local player = game.Players.LocalPlayer
+    local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid:Move(Vector3.new(0, 0, 1))
+        humanoid:Move(Vector3.new(0, 0, -1))
+
+    end
+end
+
+
+
 local TweenService = game:GetService("TweenService")
 local Player = game.Players.LocalPlayer
 local isPaused = false
