@@ -80,4 +80,15 @@ end
 
 if getgenv().autofarm == true then
     loopTween()
-end -- rate it ig 
+end 
+-- credit too snepme
+while true do
+    wait(300)
+    local player = game.Players.LocalPlayer
+    local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid:Move(Vector3.new(0, 0, 1))
+        humanoid:Move(Vector3.new(0, 0, -1))
+
+    end
+end
