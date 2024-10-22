@@ -86,9 +86,7 @@ local function loopTween()
                 end
             end
         end
-        task.wait(1)
-    end
-end
+     
 
 if getgenv().autofarm == true then
     loopTween()
