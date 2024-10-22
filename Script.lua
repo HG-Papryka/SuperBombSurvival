@@ -1,11 +1,8 @@
--- thx aeroxhub for fixing it
--- put it next too script too unlock options bc i think its not working (em u can Skid i mean lern for that but at lest type credids["By Potet"]
--- getgenv().autofarm = true
--- getgenv().collect_HalloweenCandy = true
--- getgenv().collect_EventIcon = true
--- getgenv().collect_Coin = true
--- getgenv().collect_HeartPickup = true
--- here is tamplate for option bc im dumb 
+getgenv().autofarm = true
+getgenv().collectHalloweenCandy = true
+getgenv().collect_EventIcon = true
+getgenv().collect_Coin = true
+getgenv().collect_HeartPickup = true
 
 local TweenService = game:GetService("TweenService")
 local Player = game.Players.LocalPlayer
@@ -15,16 +12,13 @@ local Remotes = game:GetService("ReplicatedStorage").Remotes
 local targetNames = {
     "Coin_copper",
     "Coin_silver",
-    "Coin_golden",
-    "Coin_red",
-    "Coin_purple",
     "EventIcon",
     "HalloweenCandy",
     "HeartPickup"
 }
 
 local function createTween(part, goalPosition)
-    local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
     local goal = {CFrame = goalPosition}
     return TweenService:Create(part, tweenInfo, goal)
 end
@@ -49,7 +43,7 @@ end
 
 local function loopTween()
     local positions = {
-        CFrame.new(121, 272, 181), --potet is sexy yk?
+        CFrame.new(121, 272, 181),
         CFrame.new(120, 272, 28),
         CFrame.new(-34, 272, 29),
         CFrame.new(-34, 272, 183)
@@ -80,9 +74,8 @@ end
 
 if getgenv().autofarm == true then
     loopTween()
-end 
--- credit too snepme
-while true do
+end
+
     wait(300)
     local player = game.Players.LocalPlayer
     local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -92,3 +85,16 @@ while true do
 
     end
 end
+-- antiafk
+while true do
+    wait(300)  -- Czeka 300 sekund (5 minut)
+    local player = game.Players.LocalPlayer
+    local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+    
+    if humanoid then
+        humanoid:Move(Vector3.new(0, 0, 1))  -- Ruch do przodu
+        wait(1)  -- Mały odstęp czasowy między ruchami
+        humanoid:Move(Vector3.new(0, 0, -1))  -- Ruch do tyłu
+    end
+end
+
