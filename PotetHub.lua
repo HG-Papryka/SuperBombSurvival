@@ -94,10 +94,6 @@ local function loopTween()
     end
 end
 
-if getgenv().autofarm then
-    loopTween()
-end
-
 -- Anti-AFK
 while true do
     wait(300)  -- Waits 300 seconds (5 minutes)
@@ -110,3 +106,8 @@ while true do
         humanoid:Move(Vector3.new(0, 0, -1))  -- Moves backward
     end
 end
+
+if getgenv().autofarm then
+    loopTween()
+end
+
