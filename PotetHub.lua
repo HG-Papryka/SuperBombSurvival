@@ -1,15 +1,8 @@
-while true do
-    wait(300)
-    local player = game.Players.LocalPlayer
-    local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid:Move(Vector3.new(0, 0, 1))
-        humanoid:Move(Vector3.new(0, 0, -1))
-
-    end
-end
-
-
+getgenv().autofarm = getgenv().autofarm or true
+getgenv().collect_HalloweenCandy = getgenv().collect_HalloweenCandy or true
+getgenv().collect_EventIcon = getgenv().collect_EventIcon or true
+getgenv().collect_Coins = getgenv().collect_Coins or true
+getgenv().collect_HeartPickup = getgenv().collect_HeartPickup or true
 
 local TweenService = game:GetService("TweenService")
 local Player = game.Players.LocalPlayer
@@ -17,26 +10,9 @@ local isPaused = false
 local tween
 local Remotes = game:GetService("ReplicatedStorage").Remotes
 
-local defaultSettings = {
-    autofarm = true,
-    collect_HalloweenCandy = false,
-    collect_EventIcon = true,
-    collect_Coins = true,
-    collect_HeartPickup = true
-}
-
-getgenv().autofarm = getgenv().autofarm or defaultSettings.autofarm
-getgenv().collect_HalloweenCandy = getgenv().collect_HalloweenCandy or defaultSettings.collect_HalloweenCandy
-getgenv().collect_EventIcon = getgenv().collect_EventIcon or defaultSettings.collect_EventIcon
-getgenv().collect_Coins = getgenv().collect_Coins or defaultSettings.collect_Coins
-getgenv().collect_HeartPickup = getgenv().collect_HeartPickup or defaultSettings.collect_HeartPickup
-
 local targetNames = {
     "Coin_copper",
     "Coin_silver",
-    "Coin_gold",
-    "Coin_red",
-    "Coin_purple",
     "EventIcon",
     "HalloweenCandy",
     "HeartPickup"
@@ -48,27 +24,22 @@ local function createTween(part, goalPosition)
     return TweenService:Create(part, tweenInfo, goal)
 end
 
-local function isInCollectingZone(part)
-    local position = part.Position
-    return position.X >= 101 and position.X <= 141 and position.Z >= 28 and position.Z <= 183
-end
-
 local function teleportToParts()
     for _, part in ipairs(workspace.Bombs:GetChildren()) do
         if table.find(targetNames, part.Name) then
             if (part.Name == "HalloweenCandy" and getgenv().collect_HalloweenCandy) or
                (part.Name == "EventIcon" and getgenv().collect_EventIcon) or
-               (part.Name == "HeartPickup" and getgenv().collect_HeartPickup) or
-               (string.match(part.Name, "Coin_") and getgenv().collect_Coins) then
+               ((part.Name == "Coin_copper" or part.Name == "Coin_silver") and getgenv().collect_Coins) or
+               (part.Name == "HeartPickup" and getgenv().collect_HeartPickup) then
 
-                if isInCollectingZone(part) then
-                    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-                        Player.Character.HumanoidRootPart.CFrame = part.CFrame
-                        task.wait(0.2)
-                    end
+                if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+                    print("Teleporting to: " .. part.Name)  -- Debugging line to verify teleport
+                    Player.Character.HumanoidRootPart.CFrame = part.CFrame
+                    wait(0.5)  -- Slight delay increased to ensure teleportation happens before next action
                 end
             end
         end
+        wait(0.2)  -- Add delay between teleports to avoid game overload
     end
 end
 
@@ -82,25 +53,29 @@ local function loopTween()
 
     while true do
         if isPaused then
-            while isPaused do task.wait() end
+            while isPaused do wait() end
         end
 
         Remotes.chooseOption:FireServer("afk", false)
+        wait(0.3)  -- Delay to prevent server overload
 
+        -- Loop through the defined positions for tweening
         for _, pos in ipairs(positions) do
             if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
                 tween = createTween(Player.Character.HumanoidRootPart, pos)
                 tween:Play()
-                tween.Completed:Wait()
+                tween.Completed:Wait()  -- Wait for the tween to complete before moving to the next position
 
                 if getgenv().autofarm then
-                    teleportToParts()
-                    task.wait(0.5)
+                    teleportToParts()  -- Teleport after tweening to the new position
                 end
+                wait(0.5)  -- Delay between tweens to reduce stress on the game
             end
         end
-     
+        wait(1)  -- Overall loop delay to further avoid performance issues
+    end
+end
 
-if getgenv().autofarm == true then
+if getgenv().autofarm then
     loopTween()
 end
