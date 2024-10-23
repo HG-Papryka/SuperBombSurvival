@@ -1,7 +1,7 @@
 getgenv().autofarm = getgenv().autofarm or true
-getgenv().collect_HalloweenCandy = getgenv().collect_HalloweenCandy or true
-getgenv().collect_EventIcon = getgenv().collect_EventIcon or true
-getgenv().collect_Coins = getgenv().collect_Coins or true
+getgenv().collect_HalloweenCandy = getgenv().collect_HalloweenCandy or false
+getgenv().collect_EventIcon = getgenv().collect_EventIcon or false
+getgenv().collect_Coins = getgenv().collect_Coins or false
 getgenv().collect_HeartPickup = getgenv().collect_HeartPickup or true
 
 local TweenService = game:GetService("TweenService")
@@ -18,26 +18,30 @@ local targetNames = {
     "HeartPickup"
 }
 
+local fixedYPosition = 272  -- Stała wysokość, np. 272
+
 -- Funkcja AntiAFK poruszająca postacią co 5 minut
 local function antiAFK()
     while true do
         if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-            -- Delikatny ruch postacią (zmiana pozycji o 0.1 jednostki)
             local currentPosition = Player.Character.HumanoidRootPart.Position
             Player.Character.HumanoidRootPart.CFrame = CFrame.new(currentPosition + Vector3.new(0.1, 0, 0))
             wait(0.1)
-            Player.Character.HumanoidRootPart.CFrame = CFrame.new(currentPosition)  -- Powrót do pierwotnej pozycji
+            Player.Character.HumanoidRootPart.CFrame = CFrame.new(currentPosition)
         end
-        wait(300)  -- Odczekaj 5 minut (300 sekund)
+        wait(300) -- 5 minut
     end
 end
 
 local function createTween(part, goalPosition)
+    -- Ustawiamy stałą wysokość Y na fixedYPosition
+    local newGoalPosition = CFrame.new(goalPosition.X, fixedYPosition, goalPosition.Z)
     local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-    local goal = {CFrame = goalPosition}
+    local goal = {CFrame = newGoalPosition}
     return TweenService:Create(part, tweenInfo, goal)
 end
 
+-- Funkcja teleportacji z opóźnieniem
 local function teleportToParts()
     for _, part in ipairs(workspace.Bombs:GetChildren()) do
         if table.find(targetNames, part.Name) then
@@ -47,22 +51,22 @@ local function teleportToParts()
                (part.Name == "HeartPickup" and getgenv().collect_HeartPickup) then
 
                 if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-                    print("Teleporting to: " .. part.Name)  -- Debugging line to verify teleport
-                    Player.Character.HumanoidRootPart.CFrame = part.CFrame
-                    wait(0.01)  -- Minimalne opóźnienie
+                    print("Teleporting to: " .. part.Name)
+                    local newCFrame = CFrame.new(part.Position.X, fixedYPosition, part.Position.Z)
+                    Player.Character.HumanoidRootPart.CFrame = newCFrame  -- Utrzymujemy stałą wysokość
+                    wait(0.1)  -- Opóźnienie przy teleportacji
                 end
             end
         end
-        wait(0.01)  -- Minimalne opóźnienie między teleportacjami
     end
 end
 
 local function loopTween()
     local positions = {
-        CFrame.new(121, 272, 181),
-        CFrame.new(120, 272, 28),
-        CFrame.new(-34, 272, 29),
-        CFrame.new(-34, 272, 183)
+        CFrame.new(121, fixedYPosition, 181),
+        CFrame.new(120, fixedYPosition, 28),
+        CFrame.new(-34, fixedYPosition, 29),
+        CFrame.new(-34, fixedYPosition, 183)
     }
 
     while true do
@@ -71,23 +75,20 @@ local function loopTween()
         end
 
         Remotes.chooseOption:FireServer("afk", false)
-        wait(0.01)  -- Minimalne opóźnienie
-
-        -- Loop through the defined positions for tweening
+        
+        -- Tweenowanie pozycji bez przerwy
         for _, pos in ipairs(positions) do
             if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
                 tween = createTween(Player.Character.HumanoidRootPart, pos)
                 tween:Play()
-                
-                -- Usunięcie opóźnienia między tweenami, aby postać nie zatrzymywała się
-                tween.Completed:Wait()  -- Czekaj, aż tween się zakończy
-                
+                tween.Completed:Wait()  -- Czekaj na zakończenie tweena
+
                 if getgenv().autofarm then
-                    teleportToParts()  -- Teleportacja po tweeningu
+                    teleportToParts()  -- Teleportacja z opóźnieniem
                 end
             end
         end
-        wait(0.09)  -- Minimalne opóźnienie na powtórzenie pętli
+        wait(0.09)  -- Krótkie opóźnienie po tweeningu
     end
 end
 
