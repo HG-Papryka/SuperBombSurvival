@@ -49,11 +49,11 @@ local function teleportToParts()
                 if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
                     print("Teleporting to: " .. part.Name)  -- Debugging line to verify teleport
                     Player.Character.HumanoidRootPart.CFrame = part.CFrame
-                    wait(0.1)  -- Krótkie opóźnienie
+                    wait(0.01)  -- Minimalne opóźnienie
                 end
             end
         end
-        wait(0.1)  -- Krótkie opóźnienie między teleportacjami
+        wait(0.01)  -- Minimalne opóźnienie między teleportacjami
     end
 end
 
@@ -71,7 +71,7 @@ local function loopTween()
         end
 
         Remotes.chooseOption:FireServer("afk", false)
-        wait(0.1)  -- Krótkie opóźnienie
+        wait(0.01)  -- Minimalne opóźnienie
 
         -- Loop through the defined positions for tweening
         for _, pos in ipairs(positions) do
@@ -87,7 +87,7 @@ local function loopTween()
                 end
             end
         end
-        wait(0.2)  -- Długie opóźnienie na powtórzenie pętli
+        wait(0.09)  -- Minimalne opóźnienie na powtórzenie pętli
     end
 end
 
