@@ -1,9 +1,19 @@
-getgenv().autofarm = getgenv().autofarm or true
-getgenv().collect_HalloweenCandy = getgenv().collect_HalloweenCandy or true
-getgenv().collect_EventIcon = getgenv().collect_EventIcon or true
-getgenv().collect_Coins = getgenv().collect_Coins or true
-getgenv().collect_HeartPickup = getgenv().collect_HeartPickup or true
+-- Zmienna autofarm (sprawdzamy, czy już została ustawiona, jeśli nie, to ustawiamy na true)
+getgenv().autofarm = (getgenv().autofarm == nil) and true or getgenv().autofarm
 
+-- Zmienna collect_HalloweenCandy (sprawdzamy, czy już została ustawiona, jeśli nie, to ustawiamy na true)
+getgenv().collect_HalloweenCandy = (getgenv().collect_HalloweenCandy == nil) and true or getgenv().collect_HalloweenCandy
+
+-- Zmienna collect_EventIcon (sprawdzamy, czy już została ustawiona, jeśli nie, to ustawiamy na true)
+getgenv().collect_EventIcon = (getgenv().collect_EventIcon == nil) and true or getgenv().collect_EventIcon
+
+-- Zmienna collect_Coins (sprawdzamy, czy już została ustawiona, jeśli nie, to ustawiamy na true)
+getgenv().collect_Coins = (getgenv().collect_Coins == nil) and true or getgenv().collect_Coins
+
+-- Zmienna collect_HeartPickup (sprawdzamy, czy już została ustawiona, jeśli nie, to ustawiamy na true)
+getgenv().collect_HeartPickup = (getgenv().collect_HeartPickup == nil) and true or getgenv().collect_HeartPickup
+
+-- Poniżej kod Twojego skryptu działający z powyższymi wartościami
 local TweenService = game:GetService("TweenService")
 local Player = game.Players.LocalPlayer
 local isPaused = false
@@ -17,20 +27,6 @@ local targetNames = {
     "HalloweenCandy",
     "HeartPickup"
 }
-
--- Funkcja AntiAFK poruszająca postacią co 5 minut
-local function antiAFK()
-    while true do
-        if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-            -- Delikatny ruch postacią (zmiana pozycji o 0.1 jednostki)
-            local currentPosition = Player.Character.HumanoidRootPart.Position
-            Player.Character.HumanoidRootPart.CFrame = CFrame.new(currentPosition + Vector3.new(0.1, 0, 0))
-            wait(0.1)
-            Player.Character.HumanoidRootPart.CFrame = CFrame.new(currentPosition)  -- Powrót do pierwotnej pozycji
-        end
-        wait(300)  -- Odczekaj 5 minut (300 sekund)
-    end
-end
 
 local function createTween(part, goalPosition)
     local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
@@ -89,9 +85,6 @@ local function loopTween()
         wait(0.2)  -- Długie opóźnienie na powtórzenie pętli
     end
 end
-
--- Uruchomienie AntiAFK w oddzielnym wątku
-spawn(antiAFK)
 
 if getgenv().autofarm then
     loopTween()
