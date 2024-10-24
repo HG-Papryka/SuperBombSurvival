@@ -19,7 +19,7 @@ local function antiAFK()
 end
 
 local function createTween(part, goalPos)
-    return TweenService:Create(part, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {CFrame = CFrame.new(goalPos.X, fixedYPosition, goalPos.Z)})
+    return TweenService:Create(part, TweenInfo.new(1.69, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {CFrame = CFrame.new(goalPos.X, fixedYPosition, goalPos.Z)})
 end
 
 local function teleportToParts()
