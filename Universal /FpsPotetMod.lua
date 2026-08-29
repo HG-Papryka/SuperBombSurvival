@@ -2,8 +2,8 @@ print("Potetium Loaded")
 
 if _G.Cam == nil then _G.Cam = false end
 if _G.Transparent == nil then _G.Transparent = true end
-if _G.Gui == nil then _G.Gui = false end
-if _G.Disable3D == nil then _G.Disable3D = true end --someone fucked up logic i wonder who and its kinda mushy :Sob: like true=false false=true type shit
+if _G.Gui == nil then _G.Gui = true end
+if _G.Render3D == nil then _G.Render3D = true end
 
 local a = {}
 local b = {}
@@ -79,7 +79,7 @@ b.b1 = function()
 end
 
 b.b2 = function()
-    if _G.Disable3D then
+    if not _G.Render3D then
         pcall(function() r:Set3dRenderingEnabled(false) end)
     end
 end
